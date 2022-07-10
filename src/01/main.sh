@@ -1,4 +1,5 @@
 #!/bin/bash
+# Отключаем проверку подключаемых файлов
 # shellcheck disable=SC1091
 
 # $1 - путь к папке
@@ -15,8 +16,13 @@ validate_input "$1" "$2" "$3" "$4" "$5" "$6" $#
 check=$?
 if [[ $check -eq 0 ]]; then
   folder="$1"
-  mkdir -p "$folder"
-  cd "$folder" || exit 1
-  party_hard 
+  if [[ $(df -BM / | tail -n -1 | awk '{print $4}' | sed 's/M//') -ge 1024 ]]; then
+    mkdir -p "$folder"
+    cd "$folder" || exit 1
+    party_hard
+  else
+    echo "There is already less free space than 1GB."
+    check=1
+  fi
 fi
 exit $check
