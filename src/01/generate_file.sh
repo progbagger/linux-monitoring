@@ -1,9 +1,8 @@
 #!/bin/bash
 
-maxsize=$1
-maxsize=$((maxsize * 1024))
-
 function genfile() {
+  maxsize=$1
+  maxsize=$((maxsize * 1024))
   string=""
   for ((i = 0; i < maxsize; i++)); do
     string+="0"
