@@ -1,12 +1,20 @@
 #!/bin/bash
 
-logfile="created_files.log"
-
-# Имя файла должно быть абсолютным!
 function record() {
+  local filename
   filename="$1"
+
+  local logfile
+  logfile="$2"
+
+  local fileinfo
   fileinfo="$(ls -l --time-style=full-iso --block-size=K "$filename")"
+
+  local size
   size="$(awk '{print $5}' <<<"$fileinfo")"
+
+  local date
   date="$(awk '{print $6, _$7}' <<<"$fileinfo" | sed 's/\..*//')"
-  echo "$filename" "$date" "$size" >>"$logfile"
+
+  echo "$(pwd)""/""$filename" "$date" "$size" >>"$logfile"
 }

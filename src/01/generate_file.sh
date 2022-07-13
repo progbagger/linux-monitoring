@@ -1,12 +1,11 @@
 #!/bin/bash
 
 function genfile() {
-  maxsize=$1
-  maxsize=$((maxsize * 1024))
-  string=""
-  for ((i = 0; i < maxsize; i++)); do
-    string+="0"
-  done
+  local name
+  name="$1"
 
-  echo -n "$string"
+  local size
+  size=$2
+
+  fallocate -l "$size"K "$name"
 }

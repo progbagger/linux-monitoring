@@ -1,6 +1,7 @@
 #!/bin/bash
 
 validate_input() {
+  local result
   result=0
 
   if [[ $7 -ne 6 ]]; then
@@ -23,13 +24,21 @@ validate_input() {
       echo "- 4-th param: Must be a positive number."
       result=1
     fi
+
+    local name
     name="$(grep -oE '^.*\.' <<<"$5" | sed 's/\.//')"
+
+    local extension
     extension="$(grep -oE '\..*$' <<<"$5" | sed 's/\.//')"
+    
     if ! [[ "$name" =~ [[:alpha:]] && ${#name} -le 7 && "$extension" =~ [[:alpha:]] && ${#extension} -le 3 ]]; then
       echo "- 5-th param: Must be in format \"abcdefg.abc\"."
       result=1
     fi
+
+    local value
     value="$(grep -oE '^[[:digit:]].*(kb)' <<<"$6" | sed 's/kb//')"
+    
     if ! [[ $value -gt 0 && $value -le 100 ]]; then
       echo "- 6-th param: Must be in format nkb, 0 < n <= 100."
       result=1
