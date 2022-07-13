@@ -82,6 +82,14 @@ function party_hard() {
         change_file_name current_filename current_extension "$files_names_letters" "$files_extensions_letters"
         genfile "$current_filename""_""$current_date"".""$current_extension" "$file_size"
         record "$current_filename""_""$current_date"".""$current_extension" "$logfile_name"
+        avail_space=$(df -BM / | tail -n -1 | awk '{print $4}' | sed 's/M//')
+        avail_space_print="$avail_space"" MB"
+        echo -en "\033[""${#avail_space_print}""D"
+        tail="$RED""$avail_space_print""$RESET"
+        echo -en "$tail"
+        if ! [[ $avail_space -ge 1024 ]]; then
+          break 3
+        fi
       done
       if [[ $subfolder_count -ne $((subfolders_total - 1)) ]]; then
         cd ..
@@ -91,11 +99,6 @@ function party_hard() {
       change_folder_name current_subfolder "$folders_names_letters"
     done
     current_subfolder=""
-    avail_space=$(df -BM / | tail -n -1 | awk '{print $4}' | sed 's/M//')
-    avail_space_print="$avail_space"" MB"
-    echo -en "\033[""${#avail_space_print}""D"
-    tail="$RED""$avail_space_print""$RESET"
-    echo -en "$tail"
   done
   echo
   echo -e "$CYAN""Done""$RESET"

@@ -12,16 +12,16 @@ validate_input() {
       echo "- 1-st param: This folder is already exist."
       result=1
     fi
-    if ! [[ "$2" =~ [[:digit:]] && $2 -ge 0 ]]; then
-      echo "- 2-nd param: Must be a non-negative number."
+    if ! [[ "$2" =~ [[:digit:]] && $2 -ge 0 && $2 -le 100 ]]; then
+      echo "- 2-nd param: Must be in range 0 < n <= 100."
       result=1
     fi
     if ! [[ "$3" =~ [[:alpha:]] && ${#3} -le 7 && ${#3} -gt 0 ]]; then
       echo "- 3-rd param: Must consist of English alphabet and have length of 7 characters."
       result=1
     fi
-    if ! [[ "$4" =~ [[:digit:]] && $4 -gt 0 ]]; then
-      echo "- 4-th param: Must be a positive number."
+    if ! [[ "$4" =~ [[:digit:]] && $4 -gt 0 && $4 -le 100 ]]; then
+      echo "- 4-th param: Must be in range 0 < n <= 100."
       result=1
     fi
 
@@ -30,7 +30,7 @@ validate_input() {
 
     local extension
     extension="$(grep -oE '\..*$' <<<"$5" | sed 's/\.//')"
-    
+
     if ! [[ "$name" =~ [[:alpha:]] && ${#name} -le 7 && "$extension" =~ [[:alpha:]] && ${#extension} -le 3 ]]; then
       echo "- 5-th param: Must be in format \"abcdefg.abc\"."
       result=1
@@ -38,7 +38,7 @@ validate_input() {
 
     local value
     value="$(grep -oE '^[[:digit:]].*(kb)' <<<"$6" | sed 's/kb//')"
-    
+
     if ! [[ $value -gt 0 && $value -le 100 ]]; then
       echo "- 6-th param: Must be in format nkb, 0 < n <= 100."
       result=1
