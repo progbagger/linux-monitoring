@@ -5,13 +5,19 @@
 source ./logger.sh
 source ./generate_file.sh
 source ./change_file_name.sh
+source ./output_info.sh
 
+# $1 - количество подпапок
+# $2 - допустимые символы имён папок
+# $3 - количество файлов
+# $4 - допустимые имена файлов
+# $5 - размер создаваемых файлов
+# $6 - директория, в которой создавать подпапки
 function party_hard() {
   # Имя файла с логами
   local logfile_name
   logfile_name="$(pwd)/created_files.log"
 
-  # Папка, указанная пользователем
   local folder
   folder="$6"
 
@@ -20,23 +26,18 @@ function party_hard() {
   # Дата запуска скрипта
   current_date="$(date '+%d%m%y')"
 
-  # Количество подпапок
   local subfolders_total
   subfolders_total="$1"
 
-  # Допустимые имена папок
   local folders_names_letters
   folders_names_letters="$2"
 
-  # Начальное имя подпапки
   local current_subfolder
   current_subfolder=""
 
-  # Количество файлов в каждой папке
   local files_total
   files_total="$3"
 
-  # Допустимые имена файлов вместе с расширениями
   local filenames
   filenames="$4"
 
@@ -52,7 +53,6 @@ function party_hard() {
   local current_filename
   current_filename=""
 
-  # Размер каждого файла
   local file_size
   file_size="$5"
   file_size=$(grep -oE '^[[:digit:]].*(kb)' <<<"$file_size" | sed 's/kb//')
@@ -63,16 +63,8 @@ function party_hard() {
   local avail_space
   avail_space=$(df -BM / | tail -n -1 | awk '{print $4}' | sed 's/M//')
 
-  local avail_space_print="$avail_space"" MB"
-
   # Печать свободного места на экран
-  local RESET="\033[0m"
-  local CYAN="\033[96m"
-  local RED="\033[91m"
-  echo -e "$CYAN""Space at start: ""$RESET""$RED""$avail_space_print""$RESET"
-  echo -en "$CYAN""Current space available: ""$RESET"
-  local tail="$RED""$avail_space_print""$RESET"
-  echo -en "$tail"
+  output_space_at_start "$avail_space"
 
   # Счётчики созданных папок и файлов
   local folders_count=0
@@ -108,13 +100,9 @@ function party_hard() {
 
       # Обновляем свободное место
       avail_space=$(df -BM / | tail -n -1 | awk '{print $4}' | sed 's/M//')
-      for ((i = 0; i < ${#avail_space_print}; i++)); do
-        echo -ne "\b"
-      done
 
       # Печатаем место на экран
-      avail_space_print="$avail_space"" MB"
-      echo -ne "$RED""$avail_space_print""$RESET"
+      output_current_space "$avail_space"
     done
 
     # Возвращаемся на уровень выше для продолжения работы скрипта
@@ -123,8 +111,5 @@ function party_hard() {
   done
 
   # Выводим итог работы скрипта
-  echo
-  echo -e "$CYAN""Done""$RESET"
-  echo -e "$RED""$total_folders_created""$RESET"" ""$CYAN""folders created""$RESET"
-  echo -e "$RED""$total_files_created""$RESET"" ""$CYAN""files created""$RESET"
+  output_results "$total_folders_created" "$total_files_created"
 }

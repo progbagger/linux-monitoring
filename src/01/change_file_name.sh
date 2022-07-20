@@ -2,18 +2,16 @@
 
 name_prefix=""
 
+# $1 - текущее имя создаваемого файла
+# $2 - допустимые символы имени файла
+# $3 - минимальная длина имени файла
 function change_file_name() {
   local -n current_file_name
   local available_names
   local min_length
 
-  # Текущее имя файла или папки
   current_file_name="$1"
-
-  # Строка доступных символов имени файла или папки
   available_names="$2"
-
-  # Минимальная длина имени файла или папки
   min_length="$3"
 
   # Изменяем имя файла или папки

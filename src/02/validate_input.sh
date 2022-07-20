@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# $1 - символы имён поддиректорий
+# $2 - символы имён файлов
+# $3 - размер в мегабайтах
+# $4 - количество аргументов, переданных в main.sh
 validate_input() {
   local result
   result=0
@@ -25,7 +29,7 @@ validate_input() {
     fi
 
     local value
-    value="$(grep -oE '^[[:digit:]].*(kb)' <<<"$3" | sed 's/Mb//')"
+    value="$(grep -oE '^[[:digit:]].*(Mb)' <<<"$3" | sed 's/Mb//')"
 
     if ! [[ $value -gt 0 && $value -le 100 ]]; then
       echo "- 3-rd param: Must be in format nMb, 0 < n <= 100."

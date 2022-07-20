@@ -1,15 +1,15 @@
 #!/bin/bash
 
+# $1 - имя логируемого файла
+# $2 - имя файла с логами
+# $3 - тип файла: директория или файл
 function record() {
-  # Имя логируемого файла
   local filename
   filename="$1"
 
-  # Имя файла логов
   local logfile
   logfile="$2"
 
-  # Тип файла: файл или директория
   local file_type
   file_type="$3"
 
@@ -27,7 +27,7 @@ function record() {
 
   # Логирование: файл или директория
   if [[ "$file_type" == "file" ]]; then
-    echo "file ""$(pwd)""/""$filename" "$date" "$size" >>"$logfile"
+    echo "file      ""$(pwd)""/""$filename" "$date" "$size" >>"$logfile"
   elif [[ "$file_type" == "folder" ]]; then
     echo "directory ""$(pwd)""/""$filename" >>"$logfile"
   fi
