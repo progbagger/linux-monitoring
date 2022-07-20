@@ -19,7 +19,6 @@ function party_hard() {
   local date
   date="$(date '+%d%m%y')"
 
-  # Доступные символы имени папок
   local available_folders_names
   available_folders_names="$1"
 
@@ -31,7 +30,6 @@ function party_hard() {
   local extension
   extension="$(grep -Eo '\..*' <<<"$2" | sed 's/\.//')"
 
-  # Размер создаваемых файлов
   local size
   size="$(sed 's/Mb//' <<<"$3")"
 
@@ -44,6 +42,7 @@ function party_hard() {
   # Список проверок, создана ли данная папка нами
   local created_folders
 
+  # Поиск путей, доступных для записи
   local paths
 
   # Ищем все директории, в которые можно создать папку, в домашней директории пользователя
@@ -90,7 +89,11 @@ function party_hard() {
       change_file_name current_folder "$available_folders_names" "5"
       mkdir "$current_folder""_""$date" 2>/dev/null
       check=$?
+
+      # Проверяем, удалось ли создать директорию
       if [[ $check -eq 0 ]]; then
+
+        # Если удалось, то меняем папку и создаём там файлы
         errors_count=0
         folders_total=$((folders_total + 1))
         record "$current_folder""_""$date" "$logfile" "folder"
@@ -101,6 +104,7 @@ function party_hard() {
         folders_count[$num]=$((${folders_count[$num]} + 1))
         cd "$current_folder""_""$date" || exit 1
       else
+
         # Если слишком много ошибок подряд - сбрасываем имена файлов и папок
         if [[ $errors_count -ge 20 ]]; then
           current_filename=""
@@ -117,14 +121,22 @@ function party_hard() {
     # Создаём файлик, если места хватает
     current_filename=""
     local files_to_create_count
+
+    # Выбираем количество файлов, которые будем создавать в папке
     files_to_create_count=$((RANDOM % 30 + 1))
 
     local created_files_count=0
     while [[ $avail_space -ge 1024 && $created_files_count -lt $files_to_create_count && $is_folder_created -eq 1 ]]; do
       created_files_count=$((created_files_count + 1))
+
+      # Меняем имя файла
       change_file_name current_filename "$available_files_names" "5"
+
+      # Генерируем файлик с указанными именем и размером
       genfile "$current_filename""_""$date"".""$extension" "$size" "M"
       files_total=$((files_total + 1))
+
+      # Логируем файлик
       record "$current_filename""_""$date"".""$extension" "$logfile" "file"
 
       # Выводим текущее свободное место
