@@ -12,10 +12,14 @@
 source ./validate_input.sh
 source ./thrashification.sh
 
+# Валидация входных данных
 validate_input "$1" "$2" "$3" "$4" "$5" "$6" $#
 check=$?
+
 if [[ $check -eq 0 ]]; then
   folder="$1"
+
+  # Если места уже не хватает, вывести соответствующее сообщение
   if [[ $(df -BM / | tail -n -1 | awk '{print $4}' | sed 's/M//') -ge 1024 ]]; then
     mkdir -p "$folder"
     party_hard "$2" "$3" "$4" "$5" "$6" "$folder"

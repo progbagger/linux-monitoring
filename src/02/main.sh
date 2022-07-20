@@ -7,14 +7,19 @@
 # $3 - размер одного создаваемого файла вида 50Mb
 
 source ./validate_input.sh
-source ../01/logger.sh
-source ../01/change_folder_name
-source ../01/change_file_name
+source ./thrashification.sh
 
+# Валидация параметров
 validate_input "$1" "$2" "$3" $#
 check=$?
 
 if [[ $check -eq 0 ]]; then
-
+  # Если места уже не хватает, выдать соответствующее сообщение
+  if [[ "$(df -BM / | tail -1 | awk '{print $4}' | sed 's/M//')" -ge 1024 ]]; then
+    party_hard "$1" "$2" "$3"
+  else
+    echo "There is already less free space than 1GB."
+    check=1
+  fi
 fi
 exit $check
