@@ -1,4 +1,8 @@
 #!/bin/bash
+# Отключаем проверку подключаемых файлов
+# shellcheck disable=SC1091
+
+source ./validate_input.sh
 
 path_to_log="$1"
 result=0

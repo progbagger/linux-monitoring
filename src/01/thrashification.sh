@@ -16,7 +16,7 @@ source ./output_info.sh
 function party_hard() {
   # Имя файла с логами
   local logfile_name
-  logfile_name="$(pwd)/created_files.log"
+  logfile_name="$(dirname "$0")/created_files.log"
 
   local folder
   folder="$6"
