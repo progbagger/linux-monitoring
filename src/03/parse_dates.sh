@@ -37,6 +37,9 @@ function parse_dates() {
     # Достаём год из второй даты
     dates_arr+=("$(grep -Eo '[0-9][0-9]([0-9][0-9])?$' <<<"$date_string")")
   fi
+
+  # Проверяем валидность
+  local months=()
 }
 
 arr=()

@@ -13,7 +13,7 @@ source ../01/output_info.sh
 function party_hard() {
   # Файл логов
   local logfile
-  logfile="$(dirname "$0")/created_files.log"
+  logfile="$(pwd)/created_files.log"
 
   # Текущая дата
   local date
