@@ -29,13 +29,11 @@ function validate_input() {
     result=1
   else
     local file_mask="^[[:lower:]]{1,7}_([0][1-9]|[1-2][0-9]|3[0-1]|)(0[1-9]|1[0-2])([0-9][0-9])"
-    if [[ -f "$1" ]]; then
+    if [[ "$1" =~ created_files\.log && -f "$1" ]]; then
       param_type="file"
     elif [[ "$1" =~ $date_mask ]]; then
 
-      # Парсинг дат для проверки на количество дней в месяцах
-      local dates=()
-
+      # Парсинг дат для их дальнейшей проверки
       local check
       parse_dates "$1" "range" dates
       check=$?
@@ -47,9 +45,8 @@ function validate_input() {
         result=1
       fi
     elif [[ "$1" =~ $file_mask ]]; then
-      # Парсинг дат для их проверки
-      local dates=()
 
+      # Парсинг дат для их дальнейшей проверки
       local inputed_date
       inputed_date="$(grep -Eo '_.*$' <<<"$1" | sed 's/_//')"
 
@@ -71,9 +68,9 @@ function validate_input() {
   return $result
 }
 
-param_type=""
-validate_input "$1" param_type $#
+param=""
+validate_input "$1" param "$3"
 check=$?
 
-echo "param_type = $param_type"
+echo "param_type = $param"
 echo "check = $check"
