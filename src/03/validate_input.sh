@@ -11,7 +11,7 @@ function validate_input() {
   local result=0
 
   local -n param_type
-  param_type="$3"
+  param_type="$2"
 
   # Регулярное выражение для проверки корректности ввода даты
   local date_mask
@@ -28,6 +28,7 @@ function validate_input() {
     echo "Please, rerun the script with appropriate parameter."
     result=1
   else
+    local file_mask="^[[:lower:]]{1,7}_([0][1-9]|[1-2][0-9]|3[0-1]|)(0[1-9]|1[0-2])([0-9][0-9])"
     if [[ -f "$1" ]]; then
       param_type="file"
     elif [[ "$1" =~ $date_mask ]]; then
@@ -36,7 +37,8 @@ function validate_input() {
       local dates=()
 
       local check
-      check=$(parse_dates "$1" "range" dates)
+      parse_dates "$1" "range" dates
+      check=$?
 
       if [[ $check -eq 0 ]]; then
         param_type="date"
@@ -44,14 +46,15 @@ function validate_input() {
         param_type="date error"
         result=1
       fi
-    elif [[ "$1" =~ ^[[:lower:]]_ ]]; then
+    elif [[ "$1" =~ $file_mask ]]; then
       # Парсинг дат для их проверки
       local dates=()
 
       local inputed_date
       inputed_date="$(grep -Eo '_.*$' <<<"$1" | sed 's/_//')"
 
-      check=$(parse_dates "$inputed_date" "date" dates)
+      parse_dates "$inputed_date" "date" dates
+      check=$?
 
       if [[ $check -eq 0 ]]; then
         param_type="mask"
@@ -67,3 +70,10 @@ function validate_input() {
 
   return $result
 }
+
+param_type=""
+validate_input "$1" param_type $#
+check=$?
+
+echo "param_type = $param_type"
+echo "check = $check"
