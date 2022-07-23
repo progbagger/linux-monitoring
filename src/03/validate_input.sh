@@ -67,16 +67,10 @@ function validate_input() {
       fi
     else
       echo "Parameter is not valid. Please, try again."
+      param_type="file error"
       result=1
     fi
   fi
 
   return $result
 }
-
-param=""
-validate_input "$1" param "$3"
-check=$?
-
-echo "param_type = $param"
-echo "check = $check"

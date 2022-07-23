@@ -81,8 +81,6 @@ function parse_dates() {
     fi
   fi
 
-  echo "${dates_arr[@]}"
-
   # Проверяем валидность
   local months
   months=(31 28 31 30 31 30 31 31 30 31 30 31)

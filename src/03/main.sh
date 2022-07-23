@@ -5,16 +5,15 @@
 source ./validate_input.sh
 source ./clean_up.sh
 
-path_to_log="$1"
+info="$1"
 result=0
+parameter_type=""
 
-if [[ -f "$path_to_log" ]]; then
-  while read -r line; do
-    rm -rf "$(awk '{print $2}' <<<"$line")"
-  done <"$path_to_log"
-  rm -rf "$path_to_log"
-else
-  echo "Incorrect path to log"
-  result=1
+validate_input "$info" parameter_type $#
+result=$?
+
+if [[ $result -eq 0 ]]; then
+  clean_up "$info" "$parameter_type"
 fi
+
 exit $result
