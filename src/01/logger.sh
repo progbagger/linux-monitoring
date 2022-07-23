@@ -15,7 +15,7 @@ function record() {
 
   # Информация о файле
   local fileinfo
-  fileinfo="$(ls -l --time-style=full-iso --block-size=K "$filename")"
+  fileinfo="$(ls -l '--time-style=+%Y-%M-%d %H:%M:%S' --block-size=K "$filename")"
 
   # Размер файла
   local size
