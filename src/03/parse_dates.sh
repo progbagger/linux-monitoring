@@ -22,23 +22,44 @@ function parse_dates() {
   dates_arr+=("$(grep -Eo '^[0-9][0-9]' <<<"$date_string")")
 
   # Вытаскиваем месяц первой даты
-  dates_arr+=("$(grep -Eo '^[0-9][0-9]\.?[0-9][0-9]' <<<"$date_string" | grep -Eo '[0-9][0-9]$')")
+  dates_arr+=("$(grep -Eo '^[0-9][0-9]\.[0-9][0-9]' <<<"$date_string" | grep -Eo '[0-9][0-9]$')")
 
   # Вытаскиваем год первой даты
   if [[ "$date_type" == "date" ]]; then
     dates_arr+=("$(grep -Eo '[0-9][0-9]([0-9][0-9])?$' <<<"$date_string")")
   elif [[ "$date_type" == "range" ]]; then
+
     # Достаём год из первой даты и всё остальное из второй даты
-    dates_arr+=("$(grep -Eo '[0-9][0-9]([0-9][0-9])?\-' <<<"$date_string" | sed 's/-//')")
+    dates_arr+=("$(grep -Eo '[0-9][0-9]([0-9][0-9])? [0-9]' <<<"$date_string" | head -1 | sed 's/ [0-9]$//')")
+
+    # Достаём время из первой даты
+    local time_str
+    time_str="$(grep -Eo '[0-9][0-9]:[0-9][0-9] ?-' <<<"$date_string" | sed 's/ -//; s/-//')"
+    echo "$time_str"
+
+    # Достаём часы из первой даты
+    dates_arr+=("$(grep -Eo '^[0-9][0-9]' <<<"$time_str")")
+
+    # Достаём минуты из первой даты
+    dates_arr+=("$(grep -Eo '[0-9][0-9]$' <<<"$time_str")")
 
     # Достаём день из второй даты
-    dates_arr+=("$(grep -Eo '\-[0-9][0-9]' <<<"$date_string" | sed 's/\-//')")
+    dates_arr+=("$(grep -Eo '\- ?[0-9][0-9]' <<<"$date_string" | sed 's/- //; s/-//')")
 
     # Достаём месяц из второй даты
-    dates_arr+=("$(grep -Eo '\-[0-9][0-9]\.?[0-9][0-9]' <<<"$date_string" | grep -Eo '[0-9][0-9]$')")
+    dates_arr+=("$(grep -Eo '\- ?[0-9][0-9]\.[0-9][0-9]' <<<"$date_string" | grep -Eo '[0-9][0-9]$')")
 
     # Достаём год из второй даты
-    dates_arr+=("$(grep -Eo '[0-9][0-9]([0-9][0-9])?$' <<<"$date_string")")
+    dates_arr+=("$(grep -Eo '[0-9][0-9]([0-9][0-9])? [0-9]' <<<"$date_string" | tail -1 | sed 's/ [0-9]//')")
+
+    # Достаём время из второй даты
+    time_str="$(grep -Eo '[0-9][0-9]:[0-9][0-9]$' <<<"$date_string")"
+
+    # Достаём часы из второй даты
+    dates_arr+=("$(grep -Eo '^[0-9][0-9]' <<<"$time_str")")
+
+    # Достаём минуты из второй даты
+    dates_arr+=("$(grep -Eo '[0-9][0-9]$' <<<"$time_str")")
   fi
 
   # Дополняем года до 4-значного значения
@@ -51,14 +72,16 @@ function parse_dates() {
   fi
 
   if [[ "$date_type" == "range" ]]; then
-    if [[ ${#dates_arr[5]} -eq 2 ]]; then
-      if [[ ${dates_arr[5]} -le 30 ]]; then
-        dates_arr[5]="20""${dates_arr[5]}"
+    if [[ ${#dates_arr[7]} -eq 2 ]]; then
+      if [[ ${dates_arr[7]} -le 30 ]]; then
+        dates_arr[7]="20""${dates_arr[5]}"
       else
-        dates_arr[5]="19""${dates_arr[5]}"
+        dates_arr[7]="19""${dates_arr[5]}"
       fi
     fi
   fi
+
+  echo "${dates_arr[@]}"
 
   # Проверяем валидность
   local months
@@ -77,11 +100,11 @@ function parse_dates() {
   # Валидируем вторую дату, если первая валидна
   if [[ $result -eq 0 && "$date_type" == "range" ]]; then
     months[1]=28
-    if [[ $((dates_arr[5] % 400)) -eq 0 || ($((dates_arr[5] % 100)) -ne 0 && $((dates_arr[5] % 4)) -eq 0) ]]; then
+    if [[ $((dates_arr[7] % 400)) -eq 0 || ($((dates_arr[7] % 100)) -ne 0 && $((dates_arr[7] % 4)) -eq 0) ]]; then
       months[1]=29
     fi
 
-    if [[ ${dates_arr[3]} -gt ${months[$((dates_arr[4] - 1))]} ]]; then
+    if [[ ${dates_arr[5]} -gt ${months[$((dates_arr[6] - 1))]} ]]; then
       result=2
     fi
   fi

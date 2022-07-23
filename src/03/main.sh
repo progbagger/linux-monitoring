@@ -3,6 +3,7 @@
 # shellcheck disable=SC1091
 
 source ./validate_input.sh
+source ./clean_up.sh
 
 path_to_log="$1"
 result=0

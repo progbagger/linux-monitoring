@@ -15,7 +15,7 @@ function record() {
 
   # Информация о файле
   local fileinfo
-  fileinfo="$(ls -l '--time-style=+%Y-%M-%d %H:%M:%S' --block-size=K "$filename")"
+  fileinfo="$(ls -l '--time-style=+%Y-%m-%d %H:%M:%S' --block-size=K "$filename")"
 
   # Размер файла
   local size
@@ -29,6 +29,6 @@ function record() {
   if [[ "$file_type" == "file" ]]; then
     echo "file      ""$(pwd)""/""$filename" "$date" "$size" >>"$logfile"
   elif [[ "$file_type" == "folder" ]]; then
-    echo "directory ""$(pwd)""/""$filename" >>"$logfile"
+    echo "directory ""$(pwd)""/""$filename" "$date" >>"$logfile"
   fi
 }
