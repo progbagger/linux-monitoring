@@ -13,6 +13,8 @@ function clean_up() {
   local green="\033[92m"
   local reset="\033[m"
 
+  local empty_check=0
+
   local file_type
   file_type="$2"
 
@@ -45,45 +47,40 @@ function clean_up() {
     # Ищем ФАЙЛЫ в указанном диапазоне и удаляем их
     # ! Если удалять папки, есть риск лишиться многого!
     local files
-    files="$(find ~ -type f -newermt "${dates_array[2]}-${dates_array[1]}-${dates_array[0]} ${dates_array[3]}:${dates_array[4]}" ! -newermt "${dates_array[7]}-${dates_array[6]}-${dates_array[5]} ${dates_array[8]}:${dates_array[9]}" 2>/dev/null)"
-    files+="$(find /tmp -type f -newermt "${dates_array[2]}-${dates_array[1]}-${dates_array[0]} ${dates_array[3]}:${dates_array[4]}" ! -newermt "${dates_array[7]}-${dates_array[6]}-${dates_array[5]} ${dates_array[8]}:${dates_array[9]}" 2>/dev/null)"
-    local str_count
-    str_count="$(wc -l <<<"$files")"
-    if [[ $str_count -gt 100 ]]; then
-      echo -en "$red""There are more than 100 files ($str_count). Show them? [Y/n]: ""$reset""$green"
-      local answer
+    files="$(find ~ -regex '.*/.*_[0-9][0-9][0-9][0-9][0-9][0-9]\(\..*\)?$' -newermt "${dates_array[2]}-${dates_array[1]}-${dates_array[0]} ${dates_array[3]}:${dates_array[4]}" ! -newermt "${dates_array[7]}-${dates_array[6]}-${dates_array[5]} ${dates_array[8]}:${dates_array[9]}" 2>/dev/null)"
+    files+="$(find /tmp -regex '.*/.*_[0-9][0-9][0-9][0-9][0-9][0-9]\(\..*\)?$' -newermt "${dates_array[2]}-${dates_array[1]}-${dates_array[0]} ${dates_array[3]}:${dates_array[4]}" ! -newermt "${dates_array[7]}-${dates_array[6]}-${dates_array[5]} ${dates_array[8]}:${dates_array[9]}" 2>/dev/null)"
+
+    if [[ "$files" != "" ]]; then
+      local str_count
+      str_count="$(wc -l <<<"$files")"
+      if [[ $str_count -gt 100 ]]; then
+        echo -en "$red""There are more than 100 files ($str_count). Show them? [Y/n]: ""$reset""$green"
+        local answer
+        read -rn 1 answer
+        echo -e "$reset"
+        if [[ "$answer" == "Y" || "$answer" == "y" ]]; then
+          echo -e "$purple""$files""$reset"
+        fi
+      else
+        echo -e "$purple""$files""$reset"
+      fi
+      echo -en "$red""Delete these ""$reset""$purple""$(wc -l <<<"$files")""$reset""$red"" files? [Y/n]: ""$reset""$green"
       read -rn 1 answer
       echo -e "$reset"
       if [[ "$answer" == "Y" || "$answer" == "y" ]]; then
-        echo -e "$purple""$files""$reset"
+        for el in $files; do
+          if [[ -f "$el" ]]; then
+            files_count=$((files_count + 1))
+          elif [[ -d "$el" ]]; then
+            files_in_dir="$(ls "$el" | wc -w)"
+            files_count=$((files_count + 1 + files_in_dir))
+          fi
+
+          rm -rf "$el" >/dev/null
+        done
       fi
     else
-      echo -e "$purple""$files""$reset"
-    fi
-    echo -e "$red""BE CAREFUL!!! THERE MAY BE SOME SYSTEM FILES!""$reset"
-    echo -e "$green""Note that there only files in case of probability of deleting user folder""$reset"
-    echo -en "$red""Delete these ""$reset""$purple""$(wc -l <<<"$files")""$reset""$red"" files? [Y/n]: ""$reset""$green"
-    read -rn 1 answer
-    echo -e "$reset"
-    if [[ "$answer" == "Y" || "$answer" == "y" ]]; then
-      for el in $files; do
-        local ftype
-        if [[ -f "$el" ]]; then
-          ftype="file"
-        else
-          ftype="err"
-        fi
-
-        rm -rf "$el" >/dev/null
-        check=$?
-
-        # Считаем удалённые файлы
-        if [[ $check -eq 0 ]]; then
-          if [[ "$ftype" == "file" ]]; then
-            files_count=$((files_count + 1))
-          fi
-        fi
-      done
+      echo -e "$purple""There is nothing to delete.""$reset"
     fi
   elif [[ "$file_type" == "mask" ]]; then
     local names

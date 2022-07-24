@@ -21,7 +21,7 @@ function validate_input() {
     echo "This script must be executed with exactly 1 parameter:"
     echo "- exact path to the file (relative or absolute)"
     echo "  or"
-    echo "- range of dates of creation (e.g. \"01.12.84 23:59:59 - 01.06.03 12:30:45\")"
+    echo "- range of dates of creation (e.g. \"01.12.84 23:59 - 01.06.03 12:30\")"
     echo "  or"
     echo "- name mask (e.g. abcdefg_220684.abc)"
     echo
