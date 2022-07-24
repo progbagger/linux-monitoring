@@ -91,16 +91,16 @@ function generate_date() {
   date="$1"
 
   if [[ "$date" =~ ^[0-9][0-9]-[0-9][0-9]-[0-9][0-9]$ ]]; then
-    date="$date"" 00:00:00"
+    date="$date:00:00:00"
   else
 
     # Парсим день-месяц-год
     local ymd
-    ymd="$(grep -Eo '^.* ' <<<"$date" | sed 's/ //')"
+    ymd="$(grep -Eo '^.*-[0-9][0-9]' <<<"$date")"
 
     # Парсим час-минуты-секунды
     local hms
-    hms="$(grep -Eo ' .*$' <<<"$date" | sed 's/ //')"
+    hms="$(grep -Eo ':.*$' <<<"$date" | sed 's/://')"
 
     # Вытаскиваем часы
     local hours
@@ -130,7 +130,7 @@ function generate_date() {
     fi
 
     # Формируем итоговую дату
-    date="$ymd "
+    date="$ymd:"
     if [[ ${#hours} -eq 1 ]]; then
       date+="0"
     fi
@@ -158,22 +158,22 @@ function generate_record() {
   local record=""
 
   # Добавляем IP
-  record+="$(generate_ip)"" "
-
-  # Добавляем код ответа
-  record+="$(generate_response)"" "
-
-  # Добавляем метод
-  record+="$(generate_method)"" "
+  record+="$(generate_ip) "
 
   # Добавляем дату
-  record+="$(generate_date "$current_date")"" "
+  record+="[$(generate_date "$current_date")] "
+
+  # Добавляем метод
+  record+="\"$(generate_method)\" "
+
+  # Добавляем код ответа
+  record+="$(generate_response) "
 
   # Добавляем URL
-  record+="$(generate_url)"" "
+  record+="\"$(generate_url)\" "
 
   # Добавляем агент
-  record+="$(generate_agent)"
+  record+="\"$(generate_agent)\""
 
   echo "$record"
 }
