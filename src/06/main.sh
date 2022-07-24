@@ -18,6 +18,7 @@ if [[ $# -eq 0 ]]; then
     param+="$path_to_logs/$file "
   done
 
+  goaccess -p "$goaccess_conf" $param -o stats.html
   goaccess -p "$goaccess_conf" $param
 else
   result=1
