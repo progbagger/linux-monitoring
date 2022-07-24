@@ -35,7 +35,6 @@ function parse_dates() {
     # Достаём время из первой даты
     local time_str
     time_str="$(grep -Eo '[0-9][0-9]:[0-9][0-9] ?-' <<<"$date_string" | sed 's/ -//; s/-//')"
-    echo "$time_str"
 
     # Достаём часы из первой даты
     dates_arr+=("$(grep -Eo '^[0-9][0-9]' <<<"$time_str")")

@@ -3,7 +3,6 @@
 # shellcheck disable=SC1091
 
 source ./parse_dates.sh
-source ./validate_log_line.sh
 
 # $1 - информация для удаления
 # $2 - тип информации для удаления
@@ -24,35 +23,48 @@ function clean_up() {
   local files_count=0
 
   if [[ "$file_type" == "file" ]]; then
-    # Считаем номер строчки
-    local line_count
-    line_count=1
+    local check
 
     # Удаляем все файлы, записанные в логе
     while read -r line; do
-      if [[ $(validate_log_line "$line") -eq 0 ]]; then
-        if [[ -f "$(awk '{print $2}' <<<"$line")" ]]; then
-          files_count=$((files_count + 1))
-        fi
-        rm -rf "$(awk '{print $2}' <<<"$line")"
-      else
-        echo "$red""Line ""$reset""$purple""$line_count""$reset""$red"" is incorrect. Ignoring it.""$reset"
+      if [[ -f "$(awk '{print $2}' <<<"$line")" ]]; then
+        files_count=$((files_count + 1))
+      elif [[ -d "$(awk '{print $2}' <<<"$line")" ]]; then
+        local files_in_dir
+        files_in_dir=$(ls "$(awk '{print $2}' <<<"$line")" | wc -w)
+        files_count=$((files_count + 1 + files_in_dir))
       fi
+      rm -rf "$(awk '{print $2}' <<<"$line")"
     done <"$info"
   elif [[ "$file_type" == "date" ]]; then
 
     # Парсим дату
-    local dates_arr=()
-    parse_dates "$info" "range" dates_arr
+    local dates_array=()
+    parse_dates "$info" "range" dates_array
 
     # Ищем ФАЙЛЫ в указанном диапазоне и удаляем их
     # ! Если удалять папки, есть риск лишиться многого!
     local files
-    files="$(find ~ -type f -newermt "${dates_arr[2]}-${dates_arr[1]}-${dates_arr[0]} ${dates_arr[3]}:${dates_arr[4]}" ! -newermt "${dates_arr[7]}-${dates_arr[6]}-${dates_arr[5]} ${dates_arr[9]}:${dates_arr[8]}")"
-    files+="$(find /tmp -type f -newermt "${dates_arr[2]}-${dates_arr[1]}-${dates_arr[0]} ${dates_arr[3]}:${dates_arr[4]}" ! -newermt "${dates_arr[7]}-${dates_arr[6]}-${dates_arr[5]} ${dates_arr[9]}:${dates_arr[8]}")"
-    echo "$red""Delete these ""$reset""$purple""$(wc -l <<<"$files")""$reset""$red"" files? [Y/n]""$reset"
-    local answer
+    files="$(find ~ -type f -newermt "${dates_array[2]}-${dates_array[1]}-${dates_array[0]} ${dates_array[3]}:${dates_array[4]}" ! -newermt "${dates_array[7]}-${dates_array[6]}-${dates_array[5]} ${dates_array[8]}:${dates_array[9]}" 2>/dev/null)"
+    files+="$(find /tmp -type f -newermt "${dates_array[2]}-${dates_array[1]}-${dates_array[0]} ${dates_array[3]}:${dates_array[4]}" ! -newermt "${dates_array[7]}-${dates_array[6]}-${dates_array[5]} ${dates_array[8]}:${dates_array[9]}" 2>/dev/null)"
+    local str_count
+    str_count="$(wc -l <<<"$files")"
+    if [[ $str_count -gt 100 ]]; then
+      echo -en "$red""There are more than 100 files ($str_count). Show them? [Y/n]: ""$reset""$green"
+      local answer
+      read -rn 1 answer
+      echo -e "$reset"
+      if [[ "$answer" == "Y" || "$answer" == "y" ]]; then
+        echo -e "$purple""$files""$reset"
+      fi
+    else
+      echo -e "$purple""$files""$reset"
+    fi
+    echo -e "$red""BE CAREFUL!!! THERE MAY BE SOME SYSTEM FILES!""$reset"
+    echo -e "$green""Note that there only files in case of probability of deleting user folder""$reset"
+    echo -en "$red""Delete these ""$reset""$purple""$(wc -l <<<"$files")""$reset""$red"" files? [Y/n]: ""$reset""$green"
     read -rn 1 answer
+    echo -e "$reset"
     if [[ "$answer" == "Y" || "$answer" == "y" ]]; then
       for el in $files; do
         local ftype
@@ -63,7 +75,6 @@ function clean_up() {
         fi
 
         rm -rf "$el" >/dev/null
-        local check
         check=$?
 
         # Считаем удалённые файлы

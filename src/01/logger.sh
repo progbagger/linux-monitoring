@@ -23,7 +23,7 @@ function record() {
 
   # Дата создания файла
   local date
-  date="$(awk '{print $6, _$7}' <<<"$fileinfo" | sed 's/\..*//')"
+  date="$(awk '{print $6, $7}' <<<"$fileinfo" | sed 's/\..*//')"
 
   # Логирование: файл или директория
   if [[ "$file_type" == "file" ]]; then
