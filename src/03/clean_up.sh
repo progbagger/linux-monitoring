@@ -27,8 +27,24 @@ function clean_up() {
   if [[ "$file_type" == "file" ]]; then
     local check
 
+    # Счётчики для информации
+    local total_lines
+    total_lines="$(wc -l "$info" | awk '{print $1}')"
+    local current_line=0
+
+    if [[ "$(cat "$info")" != "" ]]; then
+      echo -en "$red""Total records: ""$reset""$purple""$total_lines""$reset""$red"". Checking record number ""$reset""$purple""$current_line""$reset"
+    else
+      echo -e "$red""Total records: ""$reset""$purple""$total_lines"
+    fi
+
     # Удаляем все файлы, записанные в логе
     while read -r line; do
+      for ((i = 0; i < ${#current_line}; i++)); do
+        echo -en "\b"
+      done
+      current_line=$((current_line + 1))
+      echo -en "$purple""$current_line""$reset"
       if [[ -f "$(awk '{print $2}' <<<"$line")" ]]; then
         files_count=$((files_count + 1))
       elif [[ -d "$(awk '{print $2}' <<<"$line")" ]]; then
@@ -38,6 +54,7 @@ function clean_up() {
       fi
       rm -rf "$(awk '{print $2}' <<<"$line")"
     done <"$info"
+    echo
   elif [[ "$file_type" == "date" ]]; then
 
     # Парсим дату
