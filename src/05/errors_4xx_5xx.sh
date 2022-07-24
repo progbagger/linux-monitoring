@@ -7,7 +7,7 @@ function error_requests() {
   # Достаём ошибочные ответы
   while read -r record; do
     local response_code
-    response_code="$(awk '{print $2}' <<<"$record")"
+    response_code="$(awk '{print $4}' <<<"$record")"
 
     if [[ "${response_code:0:1}" == "4" || "${response_code:0:1}" == "5" ]]; then
       echo "$record"
