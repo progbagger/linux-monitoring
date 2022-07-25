@@ -29,15 +29,12 @@ function append() {
 function genhtml() {
   local result=()
 
-  # Удаляем предыдущие метрики
-  rm -rf "$1"
-
-  append result "$(tabulate 0 "<html>")"
-  append result "$(tabulate 1 "<head>")"
-  append result "$(tabulate 2 "<meta name=\"color-scheme\" content=\"light-dark\">")"
-  append result "$(tabulate 1 "</head>")"
-  append result "$(tabulate 1 "<body>")"
-  append result "$(tabulate 2 "<pre style=\"word-wrap: break-word; white-space: pre-wrap;\">")"
+  # append result "$(tabulate 0 "<html>")"
+  # append result "$(tabulate 1 "<head>")"
+  # append result "$(tabulate 2 "<meta name=\"color-scheme\" content=\"light dark\">")"
+  # append result "$(tabulate 1 "</head>")"
+  # append result "$(tabulate 1 "<body>")"
+  # append result "$(tabulate 2 "<pre style=\"word-wrap: break-word; white-space: pre-wrap;\">")"
 
   # Получаем инфу
   local system_info
@@ -48,14 +45,15 @@ function genhtml() {
     append result "$(tabulate 3 "$line")"
   done <<<"$system_info"
 
-  # Закрываем теги
-  append result "$(tabulate 2 "</pre>")"
-  append result "$(tabulate 1 "</body>")"
-  append result "$(tabulate 0 "</html>")"
+  # # Закрываем теги
+  # append result "$(tabulate 2 "</pre>")"
+  # append result "$(tabulate 1 "</body>")"
+  # append result "$(tabulate 0 "</html>")"
+
+  # Удаляем предыдущие метрики
+  echo -n "" >"$1"
 
   for line in "${result[@]}"; do
     echo "$line" >>"$1"
   done
 }
-
-genhtml ./metrics.html
