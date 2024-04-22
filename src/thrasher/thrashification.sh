@@ -2,10 +2,12 @@
 # Отключаем проверку подключаемых файлов
 # shellcheck disable=SC1091
 
-source ./logger.sh
-source ./generate_file.sh
-source ./change_file_name.sh
-source ./output_info.sh
+relative_path="$(dirname "$0")"
+
+source "$relative_path"/logger.sh
+source "$relative_path"/generate_file.sh
+source "$relative_path"/change_file_name.sh
+source "$relative_path"/output_info.sh
 
 # $1 - количество подпапок
 # $2 - допустимые символы имён папок
@@ -61,7 +63,7 @@ function party_hard() {
 
   # Обнаружение доступного места
   local avail_space
-  avail_space=$(df "$(pwd)" / | tail -n -1 | awk '{print $4}' | sed 's/M//')
+  avail_space=$(df -BM "$(pwd)" | tail -n -1 | awk '{print $4}' | sed 's/M//')
 
   # Печать свободного места на экран
   output_space_at_start "$avail_space"

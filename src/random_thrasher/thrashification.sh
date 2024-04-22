@@ -2,10 +2,12 @@
 # Отключаем проверку подключаемых файлов
 # shellcheck disable=SC1091
 
-source ../thrasher/change_file_name.sh
-source ../thrasher/generate_file.sh
-source ../thrasher/logger.sh
-source ../thrasher/output_info.sh
+relative_path="$(dirname "$0")"
+
+source "$relative_path"/thrasher/change_file_name.sh
+source "$relative_path"/thrasher/generate_file.sh
+source "$relative_path"/thrasher/logger.sh
+source "$relative_path"/thrasher/output_info.sh
 
 # $1 - символы имён поддиректорий
 # $2 - символы имён файлов
@@ -68,7 +70,7 @@ function party_hard() {
   current_folder=""
 
   # Сканируем свободное место
-  avail_space="$(df -BM / | tail -1 | awk '{print $4}' | sed 's/M//')"
+  avail_space="$(df -BM "$(pwd)" | tail -1 | awk '{print $4}' | sed 's/M//')"
 
   # Выводим свободное место перед началом соренья
   output_space_at_start "$avail_space"
@@ -140,7 +142,7 @@ function party_hard() {
       record "$current_filename""_""$date"".""$extension" "$logfile" "file"
 
       # Выводим текущее свободное место
-      avail_space="$(df -BM / | tail -1 | awk '{print $4}' | sed 's/M//')"
+      avail_space="$(df -BM "$(pwd)" | tail -1 | awk '{print $4}' | sed 's/M//')"
       output_current_space "$avail_space"
     done
   done

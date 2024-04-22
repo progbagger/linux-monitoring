@@ -6,8 +6,10 @@
 # $2 - строка символов допустимых букв в названиях файлов
 # $3 - размер одного создаваемого файла вида 50Mb
 
-source ./validate_input.sh
-source ./thrashification.sh
+relative_path="$(dirname "$0")"
+
+source "$relative_path"/validate_input.sh
+source "$relative_path"/thrashification.sh
 
 # Валидация параметров
 validate_input "$1" "$2" "$3" $#

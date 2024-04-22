@@ -2,7 +2,9 @@
 # Отключаем проверку подключаемых файлов
 # shellcheck disable=SC1091
 
-source ./genhtml.sh
+relative_path="$(dirname "$0")"
+
+source "$relative_path"/genhtml.sh
 
 # Имя файла метрик
 metrics_path="/tmp/metrics.html"

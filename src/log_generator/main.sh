@@ -2,7 +2,9 @@
 # Отключаем проверку подключаемых файлов
 # shellcheck disable=SC1091
 
-source ./generate_record.sh
+relative_path="$(dirname "$0")"
+
+source "$relative_path"/generate_record.sh
 
 # Создаём цвета
 reset="\033[m"

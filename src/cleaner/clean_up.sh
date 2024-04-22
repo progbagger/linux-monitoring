@@ -2,7 +2,9 @@
 # Отключаем проверку подключаемых файлов
 # shellcheck disable=SC1091
 
-source ./parse_dates.sh
+relative_path="$(dirname "$0")"
+
+source "$relative_path"/parse_dates.sh
 
 # $1 - информация для удаления
 # $2 - тип информации для удаления

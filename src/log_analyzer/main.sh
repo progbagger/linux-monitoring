@@ -2,11 +2,13 @@
 # Отключаем проверку подключаемых файлов
 # shellcheck disable=SC1091
 
-source ./response.sh
-source ./unique_ip.sh
-source ./errors_4xx_5xx.sh
-source ./validate_input.sh
-source ./get_logs_content.sh
+relative_path="$(dirname "$0")"
+
+source "$relative_path"/response.sh
+source "$relative_path"/unique_ip.sh
+source "$relative_path"/errors_4xx_5xx.sh
+source "$relative_path"/validate_input.sh
+source "$relative_path"/get_logs_content.sh
 
 red="\033[91m"
 reset="\033[m"

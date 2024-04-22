@@ -2,8 +2,10 @@
 # Отключаем проверку подключаемых файлов
 # shellcheck disable=SC1091
 
-source ./validate_input.sh
-source ./clean_up.sh
+relative_path="$(dirname "$0")"
+
+source "$relative_path"/validate_input.sh
+source "$relative_path"/clean_up.sh
 
 info="$1"
 result=0

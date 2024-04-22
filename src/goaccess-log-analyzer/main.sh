@@ -1,7 +1,9 @@
 #!/bin/bash
 
+relative_path="$(dirname "$0")"
+
 # Путь к файлам лога
-path_to_logs="../04/nginx_logs"
+path_to_logs="$relative_path/04/nginx_logs"
 
 # Название файла конфигурации для GoAccess
 goaccess_conf="goaccess.conf"

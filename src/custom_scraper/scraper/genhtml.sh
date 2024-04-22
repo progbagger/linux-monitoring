@@ -2,7 +2,9 @@
 # Отключаем проверку подключаемых файлов
 # shellcheck disable=SC1091
 
-source ./scrap_metrics.sh
+relative_path="$(dirname "$0")"
+
+source "$relative_path"/scrap_metrics.sh
 
 # $1 - размер табуляции
 # $2 - текст
