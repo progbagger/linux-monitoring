@@ -2,17 +2,27 @@
 
 relative_path="$(dirname "$0")"
 
+if [[ $# -ne 1 ]]; then
+  echo "Specify path to logs folder"
+  exit 1
+fi
+
+if ! [[ -d "$1" ]]; then
+  echo "Path \"$1\" is not a directory"
+  exit 1
+fi
+
 # Путь к файлам лога
-path_to_logs="$relative_path/04/nginx_logs"
+path_to_logs="$1"
 
 # Название файла конфигурации для GoAccess
-goaccess_conf="goaccess.conf"
+goaccess_conf="$relative_path/goaccess.conf"
 
 param=""
 
 result=0
 
-if [[ $# -eq 0 ]]; then
+if [[ $# -ge 1 ]]; then
 
   # Создаём строку файлов для конфа
   files="$(ls "$path_to_logs")"
@@ -22,9 +32,6 @@ if [[ $# -eq 0 ]]; then
 
   goaccess -p "$goaccess_conf" $param -o stats.html
   goaccess -p "$goaccess_conf" $param
-else
-  result=1
-  echo "Script does not accepts any parameters."
 fi
 
 exit $result
