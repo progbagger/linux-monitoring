@@ -61,7 +61,7 @@ function party_hard() {
 
   # Обнаружение доступного места
   local avail_space
-  avail_space=$(df -BM / | tail -n -1 | awk '{print $4}' | sed 's/M//')
+  avail_space=$(df "$(pwd)" / | tail -n -1 | awk '{print $4}' | sed 's/M//')
 
   # Печать свободного места на экран
   output_space_at_start "$avail_space"
@@ -99,7 +99,7 @@ function party_hard() {
       record "$current_filename""_""$current_date"".""$files_extensions_letters" "$logfile_name" "file"
 
       # Обновляем свободное место
-      avail_space=$(df -BM / | tail -n -1 | awk '{print $4}' | sed 's/M//')
+      avail_space=$(df -BM "$(pwd)" | tail -n -1 | awk '{print $4}' | sed 's/M//')
 
       # Печатаем место на экран
       output_current_space "$avail_space"

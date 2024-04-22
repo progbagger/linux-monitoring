@@ -2,10 +2,10 @@
 # Отключаем проверку подключаемых файлов
 # shellcheck disable=SC1091
 
-source ../01/change_file_name.sh
-source ../01/generate_file.sh
-source ../01/logger.sh
-source ../01/output_info.sh
+source ../thrasher/change_file_name.sh
+source ../thrasher/generate_file.sh
+source ../thrasher/logger.sh
+source ../thrasher/output_info.sh
 
 # $1 - символы имён поддиректорий
 # $2 - символы имён файлов

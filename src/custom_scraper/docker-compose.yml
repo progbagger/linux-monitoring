@@ -1,0 +1,46 @@
+version: "3"
+
+services:
+  scraper:
+    build: scraper
+    volumes:
+      - scraped-result:/tmp
+  
+  nginx:
+    image: nginx
+    depends_on:
+      - scraper
+    networks:
+      - internal
+    expose:
+      - 3111
+    volumes:
+      - scraped-result:/tmp
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+  
+  prometheus:
+    image: bitnami/prometheus
+    depends_on:
+      - nginx
+    networks:
+      - internal
+    expose:
+      - 9090
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+
+  grafana:
+    image: grafana/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - internal
+    ports:
+      - 3000:3000
+
+
+networks:
+  internal: {}
+
+volumes:
+  scraped-result:
